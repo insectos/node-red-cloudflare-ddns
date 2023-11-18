@@ -1,0 +1,44 @@
+{
+  "name": "@insectos/node-red-cloudflare-ddns",
+  "version": "0.0.1",
+  "description": "A DDNS clinet for Cloudflare",
+  "main": "index.js",
+  "engines": {
+    "node": ">20.0.0"
+  },
+  "scripts": {
+    "test": "nyc --reporter=html --reporter=text mocha test/**/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insectos/node-red-cloudflare-ddns.git"
+  },
+  "keywords": [
+    "node-red",
+    "ssh",
+    "interactive"
+  ],
+  "author": "stw@linux.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/insectos/node-red-cloudflare-ddns/issues"
+  },
+  "homepage": "https://github.com/insectos/node-red-cloudflare-ddnsc#readme",
+  "node-red": {
+    "version": ">=3.1.0",
+    "nodes": {
+      "cloudflare-ddns": "cloudflare-ddns/cloudflare-ddns.js"
+    }
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "rewire": "^7.0.0",
+    "sinon": "^17.0.1"
+  },
+  "directories": {
+    "test": "test"
+  }
+}

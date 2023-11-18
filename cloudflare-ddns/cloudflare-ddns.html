@@ -1,0 +1,72 @@
+<script type="text/javascript">
+  RED.nodes.registerType('cloudflare-ddns', {
+    category: 'network',
+    inputs: 1,
+    outputs: 1,
+    color: '#80A4ED',
+    icon: 'font-awesome/fa-globe',
+    paletteLabel: 'Cloudflare DDNS',
+    defaults: {
+      name: {
+        value: '',
+        required: false
+      },
+      host: {
+        value: '',
+        required: true
+      }
+    },
+    credentials: {
+      cfKey: { type: 'password' },
+      zoneID: { type: 'password' }
+    },
+    inputLabels: 'send anything to trigger',
+    outputLabels: 'ip info',
+    label: function () {
+      return this.name ? this.name : 'DDNS:' + this.host;
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="cloudflare-ddns">
+   <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-globe"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-host"><i class="fa fa-globe"></i> DNS Name</label>
+    <input type="text" id="node-input-host" placeholder="Your hostname e.g. somwhere.host.io">
+  </div>
+  <div class="form-row">
+    <label for="node-input-cfKey"><i class="fa fa-globe"></i> Cloudflare API key</label>
+    <input type="password" id="node-input-cfKey">
+  </div>
+  <div class="form-row">
+    <label for="node-input-zoneID"><i class="fa fa-globe"></i> Cloudflare ZoneID</label>
+    <input type="password" id="node-input-zoneID">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="cloudflare-ddns">
+  <p>CLoudflare DDNS</p>
+
+  <h3>Inputs</h3>
+      <dl class="message-properties">
+      <dt>payload
+          <span class="property-type">any</span>
+      </dt>
+      <dd>ignored for now</dd>
+    </dl>
+  <h3>Outputs</h3>
+    <dl class="message-properties">
+      <dt>payload
+          <span class="property-type">json</span>
+      </dt>
+      <dd> The public IP address and status update</dd>
+    </dl>
+
+  <h3>Details</h3>
+  <p>Calls out to <a href="https://www.ipify.org" target="_blankS">ipify.org</a> to get the public IP address and then updates, if needed the Cloudflare DNS entry. To prevent mishab, the DNS entry must exist and its comment must begin with <code>[DDNS]</code> (Note: tags would have been nicer, but they require a paid account)</p>
+  <p>
+    You can use a Catch node to see what errors are thrown from the node that aren't already being caught and handled.</p>
+</script>

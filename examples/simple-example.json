@@ -1,0 +1,69 @@
+[
+    {
+        "id": "ad2255a07cee58a1",
+        "type": "tab",
+        "label": "CLoudflare",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "24248ee04ff1cee3",
+        "type": "cloudflare-ddns",
+        "z": "ad2255a07cee58a1",
+        "name": "",
+        "host": "add.your.host.here",
+        "x": 410,
+        "y": 140,
+        "wires": [
+            [
+                "835dfa6eded76a2e"
+            ]
+        ]
+    },
+    {
+        "id": "c31854206b33778b",
+        "type": "inject",
+        "z": "ad2255a07cee58a1",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 140,
+        "wires": [
+            [
+                "24248ee04ff1cee3"
+            ]
+        ]
+    },
+    {
+        "id": "835dfa6eded76a2e",
+        "type": "debug",
+        "z": "ad2255a07cee58a1",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 140,
+        "wires": []
+    }
+]
