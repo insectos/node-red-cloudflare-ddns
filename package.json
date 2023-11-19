@@ -15,8 +15,8 @@
   },
   "keywords": [
     "node-red",
-    "ssh",
-    "interactive"
+    "ddns",
+    "cloudflare"
   ],
   "author": "stw@linux.com",
   "license": "Apache-2.0",
