@@ -1,11 +1,11 @@
 <script type="text/javascript">
-  RED.nodes.registerType('cloudflare-ddns', {
+  RED.nodes.registerType('cloudflare-ddns-spoke', {
     category: 'Cloudflare',
     inputs: 1,
     outputs: 1,
-    color: '#80A4ED',
+    color: '#80A4FD',
     icon: 'font-awesome/fa-globe',
-    paletteLabel: 'CF DDNS',
+    paletteLabel: 'DDNS spoke',
     defaults: {
       name: {
         value: '',
@@ -17,18 +17,17 @@
       }
     },
     credentials: {
-      cfKey: { type: 'password' },
-      zoneID: { type: 'password' }
+      spokeKey: { type: 'password' }
     },
     inputLabels: 'send anything to trigger',
-    outputLabels: 'ip info',
+    outputLabels: 'ip info (changed)',
     label: function () {
-      return this.name ? this.name : 'DDNS:' + this.host;
+      return this.name ? this.name : 'DDNS spoke:' + this.host;
     }
   });
 </script>
 
-<script type="text/x-red" data-template-name="cloudflare-ddns">
+<script type="text/x-red" data-template-name="cloudflare-ddns-spoke">
    <div class="form-row">
     <label for="node-input-name"><i class="fa fa-globe"></i> Name</label>
     <input type="text" id="node-input-name">
@@ -38,35 +37,31 @@
     <input type="text" id="node-input-host" placeholder="Your hostname e.g. somwhere.host.io">
   </div>
   <div class="form-row">
-    <label for="node-input-cfKey"><i class="fa fa-globe"></i> Cloudflare API key</label>
-    <input type="password" id="node-input-cfKey">
-  </div>
-  <div class="form-row">
-    <label for="node-input-zoneID"><i class="fa fa-globe"></i> Cloudflare ZoneID</label>
-    <input type="password" id="node-input-zoneID">
+    <label for="node-input-spokeKey"><i class="fa fa-globe"></i> Spoke key</label>
+    <input type="password" id="node-input-spokeKey">
   </div>
 </script>
 
-<script type="text/x-red" data-help-name="cloudflare-ddns">
-  <p>CLoudflare DDNS</p>
+<script type="text/x-red" data-help-name="cloudflare-ddns-spoke">
+  <p>CLoudflare DDNS spoke</p>
 
   <h3>Inputs</h3>
       <dl class="message-properties">
       <dt>payload
           <span class="property-type">any</span>
       </dt>
-      <dd>ignored for now</dd>
+      <dd> <code>payload.force = true</code> triggers sending of IP even if unchanged</dd>
     </dl>
   <h3>Outputs</h3>
     <dl class="message-properties">
       <dt>payload
           <span class="property-type">json</span>
       </dt>
-      <dd> The public IP address and status update</dd>
+      <dd> The public IP address and status update. Send to the output only if changed</dd>
     </dl>
 
   <h3>Details</h3>
-  <p>Calls out to <a href="https://www.ipify.org" target="_blankS">ipify.org</a> to get the public IP address and then updates, if needed the Cloudflare DNS entry. To prevent mishab, the DNS entry must exist and its comment must begin with <code>[DDNS]</code> (Note: tags would have been nicer, but they require a paid account)</p>
+  <p>Calls out to <a href="https://www.ipify.org" target="_blankS">ipify.org</a> to get the public IP address and then send, if needed, the updated value to the output. There you can use a http-request to talk to the Cloudflare DDNS hub entry or anything else.</p>
   <p>
     You can use a Catch node to see what errors are thrown from the node that aren't already being caught and handled.</p>
 </script>

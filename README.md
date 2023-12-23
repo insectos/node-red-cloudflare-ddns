@@ -12,15 +12,15 @@ You need to login to your [Cloudflare](https://www.cloudflare.com/) account and 
 - Create a Cloudflare [API Token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/). Limit it to your Zone. It needs DNS edit permisssions
 - Create an A record (AAAA not yet) for your DDNS site. Add a comment tha begins with `[DDNS]` (Case sensitive)
 
-## Usage
+## Usage on a single node
 
 Add the Node to a page, use a button or a timer to trigger it.
 
-Use a Catch node to see what errors are thrown from the SSH node that aren't already being caught and handled.
+Use a Catch node to see what errors are thrown from the DDNS node that aren't already being caught and handled.
 
 ### Input
 
-Anything: input values are ignored, used only to trigger the looup
+Anything: input values are ignored, used only to trigger the lookup
 
 ### Output
 
@@ -33,12 +33,38 @@ Anything: input values are ignored, used only to trigger the looup
 }
 ```
 
+## Usage in the hub-spoke mode
+
+In the Hub-spoke model the Cloudflare credentials are only maintained
+by the hub. This is kind of a service provider scenario. We use it
+on distributed farms where we can't control the access to hardware and
+don't want to distribute cloudflare credentials.
+
+See the examples for a configuration
+
+### Spoke
+
+- Configure the hub URL including a path
+- Configure the token to identify the spoke
+- Use a button or timer to trigger it
+- Use a `http request` node to talk to the hub
+
+### Hub
+
+- Configure the list of spokes and their tokens
+- use a `http in` and a `http response` to handle spoke submissions
+
 ## Libraries used
 
 - Mocha, Chai, Sinon for testing
 - No Runtime dependencies beyond NodeRED
 
 ## Change log
+
+### v0.1.0
+
+- moved nodes to `Cloudflare` category
+- Introduced hub & spoke nodes for central operations
 
 ### v0.0.1
 

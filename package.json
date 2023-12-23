@@ -1,7 +1,7 @@
 {
   "name": "@insectos/node-red-cloudflare-ddns",
-  "version": "0.0.1",
-  "description": "A DDNS clinet for Cloudflare",
+  "version": "0.2.0",
+  "description": "A DDNS client for Cloudflare with optional distributed operation",
   "main": "index.js",
   "engines": {
     "node": ">20.0.0"
@@ -27,7 +27,9 @@
   "node-red": {
     "version": ">=3.1.0",
     "nodes": {
-      "cloudflare-ddns": "cloudflare-ddns/cloudflare-ddns.js"
+      "cloudflare-ddns": "cloudflare-ddns/cloudflare-ddns.js",
+      "cloudflare-ddns-hub": "cloudflare-ddns/cloudflare-ddns-hub.js",
+      "cloudflare-ddns-spoke": "cloudflare-ddns/cloudflare-ddns-spoke.js"
     }
   },
   "devDependencies": {

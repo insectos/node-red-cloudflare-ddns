@@ -73,7 +73,36 @@ const updateDdns = async (node, msg, done, fetchFunc) => {
     } else {
       unchangedStatus(node, host);
       ipObject.updated = false;
-      node.send({ payload: ipObject });
+      msg.payload = ipObject;
+      node.send(msg);
+      done();
+    }
+  } catch (err) {
+    errorStatus(node, host, err);
+    done(err);
+  }
+};
+
+const updateHost = async (node, msg, done, fetchFunc) => {
+  const actualFetch = fetchFunc ?? global.fetch;
+  const host = node.host;
+  const nodeContext = node.context();
+  let ipAdress = nodeContext.get('HostIP') ?? { ip: '0.0.0.0' };
+
+  try {
+    let actualIp = await actualIpAddress(actualFetch);
+
+    if (ipAdress?.ip !== actualIp?.ip || msg?.payload?.force) {
+      nodeContext.set('HostIP', actualIp);
+      updatedStatus(node, `${host} ${actualIp.ip}`);
+      msg.payload = {
+        host: node.host,
+        spokeKey: node.spokeKey,
+        ip: actualIp
+      };
+      node.send(msg);
+    } else {
+      unchangedStatus(node, `${host} ${actualIp.ip}`);
       done();
     }
   } catch (err) {
@@ -89,7 +118,7 @@ const updateDdns = async (node, msg, done, fetchFunc) => {
  * @returns true/false
  */
 const isupdateNeeded = (current, actual) => {
-  const ip = actual.ip;
+  const ip = actual?.ip;
   const candidates = current.ip;
   const present = candidates.filter((c) => c === ip);
   return present.length < 1;
@@ -172,7 +201,8 @@ const updateDNSEntry = async (node, ip, done, fetchFunc) => {
       // Send the update
       updatedStatus(node, node.host);
       node.context().set('DDNS', ipObject);
-      node.send({ payload: ipObject });
+      node.msg.payload = ipObject;
+      node.send(msg);
       done();
     } else {
       throw new Error('CF Update failed');
@@ -243,5 +273,6 @@ const updatedStatus = (node, host) => {
 };
 
 module.exports = {
-  updateDdns
+  updateDdns,
+  updateHost
 };
