@@ -65,6 +65,7 @@ See the examples for a configuration
 
 - moved nodes to `Cloudflare` category
 - Introduced hub & spoke nodes for central operations
+- pass through msg object to be a good Redicen (NodeRED citicen)
 
 ### v0.0.1
 

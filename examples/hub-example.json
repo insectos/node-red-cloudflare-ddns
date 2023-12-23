@@ -1,0 +1,90 @@
+[
+  {
+    "id": "a559691d9f80553e",
+    "type": "comment",
+    "z": "ad2255a07cee58a1",
+    "name": "This runs on a hub",
+    "info": "",
+    "x": 150,
+    "y": 640,
+    "wires": []
+  },
+  {
+    "id": "76e0beeebaf91e11",
+    "type": "http in",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "url": "/ddnsdemo",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 170,
+    "y": 720,
+    "wires": [["4b216770b7acaf8f", "09beb0cc4c59cede"]]
+  },
+  {
+    "id": "f231e2cdbd5e6c6c",
+    "type": "http response",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "statusCode": "",
+    "headers": {},
+    "x": 750,
+    "y": 720,
+    "wires": []
+  },
+  {
+    "id": "7d56e422cb79b08f",
+    "type": "cloudflare-ddns-hub",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "spokes": "{\"spoke.example.com\":\"secret\"}",
+    "x": 570,
+    "y": 720,
+    "wires": [["f231e2cdbd5e6c6c", "d76b4e50fddc0694"]]
+  },
+  {
+    "id": "d76b4e50fddc0694",
+    "type": "debug",
+    "z": "ad2255a07cee58a1",
+    "name": "debug 11",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 720,
+    "y": 840,
+    "wires": []
+  },
+  {
+    "id": "4b216770b7acaf8f",
+    "type": "json",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "property": "payload",
+    "action": "obj",
+    "pretty": false,
+    "x": 390,
+    "y": 720,
+    "wires": [["7d56e422cb79b08f"]]
+  },
+  {
+    "id": "09beb0cc4c59cede",
+    "type": "debug",
+    "z": "ad2255a07cee58a1",
+    "name": "debug 12",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 380,
+    "y": 800,
+    "wires": []
+  }
+]
