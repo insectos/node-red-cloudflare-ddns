@@ -70,3 +70,10 @@ See the examples for a configuration
 ### v0.0.1
 
 - Initial creation
+
+## Ideas & Feedback
+
+- Use [Github Issues](https://github.com/insectos/node-red-cloudflare-ddns/issues)
+- Discuss on [the NodeRED forum](https://discourse.nodered.org/)
+
+The Spoke component is useful even without Cloudflare and the hub component. Running it will provide you with your public IP address in the payload

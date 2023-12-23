@@ -1,0 +1,69 @@
+[
+  {
+    "id": "b61dadd60067e5da",
+    "type": "inject",
+    "z": "ad2255a07cee58a1",
+    "name": "forced",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"force\":true}",
+    "payloadType": "json",
+    "x": 170,
+    "y": 980,
+    "wires": [["77b010018da3fb0a"]]
+  },
+  {
+    "id": "77b010018da3fb0a",
+    "type": "cloudflare-ddns-spoke",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "host": "testonly.protenga.com",
+    "x": 430,
+    "y": 980,
+    "wires": [["f993905e0341fc3f"]]
+  },
+  {
+    "id": "f993905e0341fc3f",
+    "type": "cloudflare-ddns-hub",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "spokes": "{\"testonly.protenga.com\":\"supersecret\"}",
+    "x": 750,
+    "y": 980,
+    "wires": [["4976a01f42ed9615"]]
+  },
+  {
+    "id": "4976a01f42ed9615",
+    "type": "debug",
+    "z": "ad2255a07cee58a1",
+    "name": "debug 13",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 960,
+    "y": 980,
+    "wires": []
+  },
+  {
+    "id": "f02351083dddbdcb",
+    "type": "comment",
+    "z": "ad2255a07cee58a1",
+    "name": "Hub and spoke on same machine = CF DDNS",
+    "info": "",
+    "x": 270,
+    "y": 920,
+    "wires": []
+  }
+]
