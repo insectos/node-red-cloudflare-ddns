@@ -1,0 +1,49 @@
+[
+  {
+    "id": "672f0cb76dccf237",
+    "type": "inject",
+    "z": "ad2255a07cee58a1",
+    "name": "Test",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"host\":\"spoke.example.com\",\"spokeKey\":\"secret\",\"ip\":{\"ip\":\"202.133.192.208\"}}",
+    "payloadType": "json",
+    "x": 130,
+    "y": 380,
+    "wires": [["7ce8a23f961deadf"]]
+  },
+  {
+    "id": "7ce8a23f961deadf",
+    "type": "cloudflare-ddns-hub",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "spokes": "{\"spoke.example.com\":\"secret\"}",
+    "x": 390,
+    "y": 380,
+    "wires": [["deef42e0d3f6c2ec"]]
+  },
+  {
+    "id": "deef42e0d3f6c2ec",
+    "type": "debug",
+    "z": "ad2255a07cee58a1",
+    "name": "debug 9",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 660,
+    "y": 380,
+    "wires": []
+  }
+]

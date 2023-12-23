@@ -1,18 +1,18 @@
 <script type="text/javascript">
-  RED.nodes.registerType('cloudflare-ddns', {
+  RED.nodes.registerType('cloudflare-ddns-hub', {
     category: 'Cloudflare',
     inputs: 1,
     outputs: 1,
-    color: '#80A4ED',
+    color: '#80A4DD',
     icon: 'font-awesome/fa-globe',
-    paletteLabel: 'CF DDNS',
+    paletteLabel: 'DDNS hub',
     defaults: {
       name: {
         value: '',
         required: false
       },
-      host: {
-        value: '',
+      spokes: {
+        value: '{}',
         required: true
       }
     },
@@ -20,22 +20,28 @@
       cfKey: { type: 'password' },
       zoneID: { type: 'password' }
     },
-    inputLabels: 'send anything to trigger',
+    inputLabels: 'incoming IP info',
     outputLabels: 'ip info',
     label: function () {
-      return this.name ? this.name : 'DDNS:' + this.host;
+      return this.name ? this.name : 'DDNS hub';
+    },
+    oneditprepare: function () {
+      $('#node-input-spokes').typedInput({
+        type: 'json',
+        types: ['json']
+      });
     }
   });
 </script>
 
-<script type="text/x-red" data-template-name="cloudflare-ddns">
+<script type="text/x-red" data-template-name="cloudflare-ddns-hub">
    <div class="form-row">
     <label for="node-input-name"><i class="fa fa-globe"></i> Name</label>
     <input type="text" id="node-input-name">
   </div>
   <div class="form-row">
-    <label for="node-input-host"><i class="fa fa-globe"></i> DNS Name</label>
-    <input type="text" id="node-input-host" placeholder="Your hostname e.g. somwhere.host.io">
+    <label for="node-input-spokes"><i class="fa fa-globe"></i> Spokes DNS & secret</label>
+    <input type="text" id="node-input-spokes" placeholder="Spokes key/value">
   </div>
   <div class="form-row">
     <label for="node-input-cfKey"><i class="fa fa-globe"></i> Cloudflare API key</label>
@@ -47,7 +53,7 @@
   </div>
 </script>
 
-<script type="text/x-red" data-help-name="cloudflare-ddns">
+<script type="text/x-red" data-help-name="cloudflare-ddns-hub">
   <p>CLoudflare DDNS</p>
 
   <h3>Inputs</h3>

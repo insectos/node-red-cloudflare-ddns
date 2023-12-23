@@ -69,11 +69,87 @@ const updateDdns = async (node, msg, done, fetchFunc) => {
     let actualIp = await actualIpAddress(actualFetch);
 
     if (isupdateNeeded(newIpObject, actualIp)) {
-      updateDNSEntry(node, actualIp.ip, done, actualFetch);
+      updateDNSEntry(node, msg, host, actualIp.ip, done, actualFetch);
     } else {
       unchangedStatus(node, host);
       ipObject.updated = false;
-      node.send({ payload: ipObject });
+      msg.payload = ipObject;
+      node.send(msg);
+      done();
+    }
+  } catch (err) {
+    errorStatus(node, host, err);
+    done(err);
+  }
+};
+
+/**
+ * Runs a Host IP Lookup with update as needed
+ * provided by the msg inpout
+ *
+ * @param {NodeRED} node
+ * @param {json} msg
+ * @param {callback} done
+ * @param {extends global.fetch} fetchFunc
+ */
+const updateDdnsFromSpoke = async (node, msg, done, fetchFunc) => {
+  const actualFetch = fetchFunc ?? global.fetch;
+  const payload = msg.payload;
+  const host = payload?.host;
+
+  // Check for params
+  if (!payload || !payload.host || !payload.spokeKey || !payload.ip) {
+    msg.payload = {
+      status: 'error',
+      cause: 'Invalid request format'
+    };
+    node.send(msg);
+    let err = new Error(msg.payload.cause);
+    errorStatus(node, host, err);
+    return done(err);
+  }
+
+  // Check for spokeKey
+  const spokes = node.spokes;
+
+  if (!spokes || !spokes[host] || spokes[host] != payload.spokeKey) {
+    const err = new Error('Invalid spokeKey');
+    errorStatus(node, host, err);
+    return done(err);
+  }
+
+  // DO the update
+  const actualIp = payload.ip;
+
+  try {
+    // TODO: Read from cache
+    updateDNSEntry(node, msg, host, actualIp.ip, done, actualFetch);
+  } catch (err) {
+    errorStatus(node, host, err);
+    done(err);
+  }
+};
+
+const updateHost = async (node, msg, done, fetchFunc) => {
+  const actualFetch = fetchFunc ?? global.fetch;
+  const host = node.host;
+  const nodeContext = node.context();
+  let ipAdress = nodeContext.get('HostIP') ?? { ip: '0.0.0.0' };
+
+  try {
+    let actualIp = await actualIpAddress(actualFetch);
+
+    if (ipAdress?.ip !== actualIp?.ip || msg?.payload?.force) {
+      nodeContext.set('HostIP', actualIp);
+      updatedStatus(node, `${host} ${actualIp.ip}`);
+      msg.payload = {
+        host: node.host,
+        spokeKey: node.spokeKey,
+        ip: actualIp
+      };
+      node.send(msg);
+    } else {
+      unchangedStatus(node, `${host} ${actualIp.ip}`);
       done();
     }
   } catch (err) {
@@ -89,7 +165,7 @@ const updateDdns = async (node, msg, done, fetchFunc) => {
  * @returns true/false
  */
 const isupdateNeeded = (current, actual) => {
-  const ip = actual.ip;
+  const ip = actual?.ip;
   const candidates = current.ip;
   const present = candidates.filter((c) => c === ip);
   return present.length < 1;
@@ -100,12 +176,11 @@ const isupdateNeeded = (current, actual) => {
  * @param {NodeRED} node
  * @param {fetch extends global.fetch} fetchFunc
  */
-const findCloudflareRecord = async (node, fetchFunc) => {
+const findCloudflareRecord = async (node, host, fetchFunc) => {
   const actualFetch = fetchFunc ?? global.fetch;
   const zoneID = node.zoneID;
   const cfKey = node.cfKey;
   const queryURL = `https://api.cloudflare.com/client/v4/zones/${zoneID}/dns_records`;
-  const host = node.host;
   const headers = new Headers();
   headers.append('accept', 'application/json');
   headers.append('Authorization', `Bearer ${cfKey}`);
@@ -135,20 +210,20 @@ const findCloudflareRecord = async (node, fetchFunc) => {
   return oneRecord[0];
 };
 
-const updateDNSEntry = async (node, ip, done, fetchFunc) => {
+const updateDNSEntry = async (node, msg, host, ip, done, fetchFunc) => {
   const actualFetch = fetchFunc ?? global.fetch;
   // Get the DNS entry and find the record id
   const zoneID = node.zoneID;
   const cfKey = node.cfKey;
 
   try {
-    const cfRecord = await findCloudflareRecord(node, actualFetch);
+    const cfRecord = await findCloudflareRecord(node, host, actualFetch);
 
     if (cfRecord.content === ip) {
       // We have a CF proxied entry
-      unchangedStatus(node, node.host);
-      const ipObject = { updated: false, ip: [ip] };
-      node.send({ payload: ipObject });
+      unchangedStatus(node, host);
+      msg.payload = { host: host, updated: false, ip: [ip] };
+      node.send(msg);
       return done();
     }
 
@@ -170,15 +245,15 @@ const updateDNSEntry = async (node, ip, done, fetchFunc) => {
     if (cfResponse?.result.content) {
       const ipObject = { ip: [cfResponse.result.content], updated: true };
       // Send the update
-      updatedStatus(node, node.host);
-      node.context().set('DDNS', ipObject);
-      node.send({ payload: ipObject });
+      updatedStatus(node, host);
+      node.msg.payload = ipObject;
+      node.send(msg);
       done();
     } else {
-      throw new Error('CF Update failed');
+      throw new Error(`CF Update failed for ${host}`);
     }
   } catch (err) {
-    errorStatus(node, node.host, err);
+    errorStatus(node, host, err);
     console.error(err);
     done(err);
   }
@@ -243,5 +318,7 @@ const updatedStatus = (node, host) => {
 };
 
 module.exports = {
-  updateDdns
+  updateDdns,
+  updateDdnsFromSpoke,
+  updateHost
 };

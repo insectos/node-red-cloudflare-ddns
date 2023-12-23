@@ -1,0 +1,70 @@
+[
+  {
+    "id": "fbe8eab1139bd3d2",
+    "type": "cloudflare-ddns-spoke",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "host": "spoke.example.com",
+    "x": 410,
+    "y": 240,
+    "wires": [["82d45133a5a0e753"]]
+  },
+  {
+    "id": "82d45133a5a0e753",
+    "type": "debug",
+    "z": "ad2255a07cee58a1",
+    "name": "debug 8",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 660,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "564b837537ac9de6",
+    "type": "inject",
+    "z": "ad2255a07cee58a1",
+    "name": "unforced",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"tango\":\"chachacha\"}",
+    "payloadType": "json",
+    "x": 140,
+    "y": 240,
+    "wires": [["fbe8eab1139bd3d2"]]
+  },
+  {
+    "id": "d63158c9cb78b81c",
+    "type": "inject",
+    "z": "ad2255a07cee58a1",
+    "name": "forced",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"force\":true}",
+    "payloadType": "json",
+    "x": 130,
+    "y": 300,
+    "wires": [["fbe8eab1139bd3d2"]]
+  }
+]

@@ -5,17 +5,17 @@ const utils = require('./utils');
 
 module.exports = function (RED) {
   /* ssh connection */
-  function CloudFlareDdns(config) {
+  function CloudFlareDdnsHub(config) {
     RED.nodes.createNode(this, config);
     let node = this;
-    node.host = config.host;
+    node.spokes = JSON.parse(config.spokes);
     node.cfKey = this.credentials.cfKey;
     node.zoneID = this.credentials.zoneID;
 
     node.status({ fill: 'gray', shape: 'ring', text: 'ready' });
 
     node.on('input', (msg, done) => {
-      utils.updateDdns(node, msg, done);
+      utils.updateDdnsFromSpoke(node, msg, done);
     });
 
     node.on('close', (done) => {
@@ -24,7 +24,7 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType('cloudflare-ddns', CloudFlareDdns, {
+  RED.nodes.registerType('cloudflare-ddns-hub', CloudFlareDdnsHub, {
     credentials: {
       cfKey: { type: 'password' },
       zoneID: { type: 'password' }

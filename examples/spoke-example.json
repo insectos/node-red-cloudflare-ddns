@@ -1,0 +1,79 @@
+[
+  {
+    "id": "2c51a8677da9a042",
+    "type": "cloudflare-ddns-spoke",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "host": "spoke.example.com",
+    "x": 410,
+    "y": 560,
+    "wires": [["afb55eeb997b4872"]]
+  },
+  {
+    "id": "4e92057ae9234eda",
+    "type": "inject",
+    "z": "ad2255a07cee58a1",
+    "name": "forced",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"force\":true}",
+    "payloadType": "json",
+    "x": 130,
+    "y": 560,
+    "wires": [["2c51a8677da9a042"]]
+  },
+  {
+    "id": "afb55eeb997b4872",
+    "type": "http request",
+    "z": "ad2255a07cee58a1",
+    "name": "",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "http://hub.example.com/ddnsdemo",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 690,
+    "y": 560,
+    "wires": [["5679c8a22fcf2bb3"]]
+  },
+  {
+    "id": "5679c8a22fcf2bb3",
+    "type": "debug",
+    "z": "ad2255a07cee58a1",
+    "name": "debug 10",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 920,
+    "y": 560,
+    "wires": []
+  },
+  {
+    "id": "33951d5e3e065464",
+    "type": "comment",
+    "z": "ad2255a07cee58a1",
+    "name": "This runs on a spoke",
+    "info": "",
+    "x": 150,
+    "y": 500,
+    "wires": []
+  }
+]
