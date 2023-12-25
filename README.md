@@ -61,6 +61,10 @@ See the examples for a configuration
 
 ## Change log
 
+### v0.3.0
+
+- moved host & tokens to editable list
+
 ### v0.1.0
 
 - moved nodes to `Cloudflare` category

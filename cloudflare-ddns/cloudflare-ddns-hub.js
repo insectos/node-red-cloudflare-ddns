@@ -8,7 +8,10 @@ module.exports = function (RED) {
   function CloudFlareDdnsHub(config) {
     RED.nodes.createNode(this, config);
     let node = this;
-    node.spokes = JSON.parse(config.spokes);
+    node.spokes = {};
+    config.spokes.forEach((spoke) => {
+      node.spokes[spoke.host] = spoke.token;
+    });
     node.cfKey = this.credentials.cfKey;
     node.zoneID = this.credentials.zoneID;
 

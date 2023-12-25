@@ -1,4 +1,5 @@
 <script type="text/javascript">
+  let isChanged = false;
   RED.nodes.registerType('cloudflare-ddns-hub', {
     category: 'Cloudflare',
     inputs: 1,
@@ -11,27 +12,86 @@
         value: '',
         required: false
       },
-      spokes: {
-        value: '{}',
-        required: true
-      }
+      spokes: [{ host: '', token: '' }]
     },
     credentials: {
-      cfKey: { type: 'password' },
-      zoneID: { type: 'password' }
+      cfKey: { type: 'password', required: true },
+      zoneID: { type: 'password', required: true }
     },
     inputLabels: 'incoming IP info',
     outputLabels: 'ip info',
     label: function () {
       return this.name ? this.name : 'DDNS hub';
     },
-    oneditprepare: function () {
-      $('#node-input-spokes').typedInput({
-        type: 'json',
-        types: ['json']
-      });
+    oneditprepare: loadList,
+    oneditsave: saveList,
+    oneditresize: function (size) {
+      $('#node-input-spokes-container').editableList(
+        'height',
+        size.height - 210
+      );
     }
   });
+
+  function loadList() {
+    $('#node-input-spokes-container')
+      .css('min-height', '150px')
+      .css('min-width', '450px')
+      .editableList({
+        removable: true,
+        header: $('<div>').append('<p>Configured host list</p>'),
+        addButton: 'Add Spoke',
+        addItem: addSpoke
+      });
+    if (!Array.isArray(this.spokes)) {
+      // Convert legacy format
+      try {
+        const replacement = [];
+        const candidate = JSON.parse(this.spokes);
+        Object.keys(candidate).forEach((k) => {
+          let spoke = { host: k, token: candidate[k] };
+          replacement.push(spoke);
+        });
+        this.spokes = replacement;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    this.spokes.forEach((spoke) =>
+      $('#node-input-spokes-container').editableList('addItem', spoke)
+    );
+  }
+
+  function saveList() {
+    const items = $('#node-input-spokes-container').editableList('items');
+    this.spokes = [];
+    for (let i = 0; i < items.length; i++) {
+      const El = $(items[i]);
+      const curHost = El.find('.datahost')[0].value;
+      const curToken = El.find('.datatoken')[0].value;
+      this.spokes.push({ host: curHost, token: curToken });
+    }
+  }
+
+  function addSpoke(container, index, data) {
+    if (Object.keys(data).length === 0) {
+      data.index = index;
+      data.host = 'localhost';
+      data.token = 'localtoken';
+    }
+    $(container).data('data', data);
+    const HTML = `
+    <div class="form-row">
+    <label for="host${index}">Host</label>
+    <input type="text" id="host${index}" class="datahost" value="${data.host}">
+  </div>
+  <div class="form-row">
+    <label for="token${index}">Token</label>
+    <input type="text" id="token${index}" class="datatoken" value="${data.token}">
+  </div>
+    `;
+    $(container).html(HTML);
+  }
 </script>
 
 <script type="text/x-red" data-template-name="cloudflare-ddns-hub">
@@ -40,16 +100,15 @@
     <input type="text" id="node-input-name">
   </div>
   <div class="form-row">
-    <label for="node-input-spokes"><i class="fa fa-globe"></i> Spokes DNS & secret</label>
-    <input type="text" id="node-input-spokes" placeholder="Spokes key/value">
-  </div>
-  <div class="form-row">
     <label for="node-input-cfKey"><i class="fa fa-globe"></i> Cloudflare API key</label>
     <input type="password" id="node-input-cfKey">
   </div>
   <div class="form-row">
     <label for="node-input-zoneID"><i class="fa fa-globe"></i> Cloudflare ZoneID</label>
     <input type="password" id="node-input-zoneID">
+  </div>
+  <div class="form-row node-input-rule-spokes-row">
+    <ol id="node-input-spokes-container"></ol>
   </div>
 </script>
 
@@ -61,7 +120,7 @@
       <dt>payload
           <span class="property-type">any</span>
       </dt>
-      <dd>ignored for now</dd>
+      <dd>The incoming ip address info, host, ip, token</dd>
     </dl>
   <h3>Outputs</h3>
     <dl class="message-properties">
@@ -72,7 +131,7 @@
     </dl>
 
   <h3>Details</h3>
-  <p>Calls out to <a href="https://www.ipify.org" target="_blankS">ipify.org</a> to get the public IP address and then updates, if needed the Cloudflare DNS entry. To prevent mishab, the DNS entry must exist and its comment must begin with <code>[DDNS]</code> (Note: tags would have been nicer, but they require a paid account)</p>
+  <p>Recives the public IP address from a spoke node and then updates, if needed the Cloudflare DNS entry. To prevent mishab, the DNS entry must exist and its comment must begin with <code>[DDNS]</code> (Note: tags would have been nicer, but they require a paid account)</p>
   <p>
     You can use a Catch node to see what errors are thrown from the node that aren't already being caught and handled.</p>
 </script>
