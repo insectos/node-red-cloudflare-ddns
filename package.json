@@ -1,6 +1,6 @@
 {
   "name": "@insectos/node-red-cloudflare-ddns",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A DDNS client for Cloudflare with optional distributed operation",
   "main": "index.js",
   "engines": {

@@ -11,10 +11,10 @@
       name: {
         value: '',
         required: false
-      },
-      spokes: [{ host: '', token: '' }]
+      }
     },
     credentials: {
+      token: { type: 'text' },
       cfKey: { type: 'password', required: true },
       zoneID: { type: 'password', required: true }
     },
@@ -43,34 +43,29 @@
         addButton: 'Add Spoke',
         addItem: addSpoke
       });
-    if (!Array.isArray(this.spokes)) {
-      // Convert legacy format
-      try {
-        const replacement = [];
-        const candidate = JSON.parse(this.spokes);
-        Object.keys(candidate).forEach((k) => {
-          let spoke = { host: k, token: candidate[k] };
-          replacement.push(spoke);
-        });
-        this.spokes = replacement;
-      } catch (e) {
-        console.log(e);
-      }
+    let candidate;
+    try {
+      candidate = JSON.parse(this.credentials.token);
+    } catch (e) {
+      console.error(e);
+      candidate = [];
     }
-    this.spokes.forEach((spoke) =>
+    candidate.forEach((spoke) =>
       $('#node-input-spokes-container').editableList('addItem', spoke)
     );
   }
 
   function saveList() {
     const items = $('#node-input-spokes-container').editableList('items');
-    this.spokes = [];
-    for (let i = 0; i < items.length; i++) {
-      const El = $(items[i]);
+    const newSpokes = [];
+    for (const element of items) {
+      const El = $(element);
       const curHost = El.find('.datahost')[0].value;
       const curToken = El.find('.datatoken')[0].value;
-      this.spokes.push({ host: curHost, token: curToken });
+      newSpokes.push({ host: curHost, token: curToken });
     }
+    this.credentials.token = JSON.stringify(newSpokes);
+    $('#node-input-token')[0].value = JSON.stringify(newSpokes);
   }
 
   function addSpoke(container, index, data) {
@@ -87,7 +82,7 @@
   </div>
   <div class="form-row">
     <label for="token${index}">Token</label>
-    <input type="text" id="token${index}" class="datatoken" value="${data.token}">
+    <input type="password" id="token${index}" class="datatoken" value="${data.token}">
   </div>
     `;
     $(container).html(HTML);
@@ -106,6 +101,10 @@
   <div class="form-row">
     <label for="node-input-zoneID"><i class="fa fa-globe"></i> Cloudflare ZoneID</label>
     <input type="password" id="node-input-zoneID">
+  </div>
+  <div class="form-row" style="display: none">
+    <label for="node-input-token">Token</label>
+    <input type="text" id="node-input-token">
   </div>
   <div class="form-row node-input-rule-spokes-row">
     <ol id="node-input-spokes-container"></ol>
