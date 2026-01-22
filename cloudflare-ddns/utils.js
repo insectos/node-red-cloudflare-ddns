@@ -72,8 +72,9 @@ const updateDdns = async (node, msg, done, fetchFunc) => {
       updateDNSEntry(node, msg, host, actualIp.ip, done, actualFetch);
     } else {
       unchangedStatus(node, host);
-      ipObject.updated = false;
-      msg.payload = ipObject;
+      newIpObject.updated = false;
+      nodeContext.set('DDNS', newIpObject);
+      msg.payload = newIpObject;
       node.send(msg);
       done();
     }
